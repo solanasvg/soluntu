@@ -1,0 +1,2141 @@
+<html><head><base href="/" /><title>John Doe - Ubuntu Desktop Portfolio</title>
+<style>
+:root {
+    --ubuntu-orange: #E95420;
+    --ubuntu-purple: #772953;
+    --ubuntu-grey: #333333;
+    --ubuntu-sidebar: #2C001E;
+    --window-bg: rgba(0, 0, 0, 0.85);
+    --yaru-orange: #E95420;
+    --yaru-purple: #772953;
+    --yaru-warm-grey: #AEA79F;
+    --yaru-dark: #2C001E;
+    --yaru-light: #F7F7F7;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+body {
+    background: url('https://data.1freewallpapers.com/detail/violet-windows-11-logo-4k-windows-11.jpg') center/cover no-repeat fixed;
+    background-color: var(--ubuntu-grey); /* Fallback color */
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Desktop Toolbar */
+.toolbar {
+    background-color: var(--ubuntu-grey);
+    color: white;
+    height: 30px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+}
+
+.toolbar-left {
+    display: flex;
+    gap: 10px;
+}
+
+.toolbar-right {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+/* Dropdown */
+.dropdown {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: var(--ubuntu-grey);
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1001;
+    border-radius: 4px;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+}
+
+.dropdown-item:hover {
+    background-color: var(--ubuntu-orange);
+}
+
+.menu-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+.submenu {
+    position: relative;
+}
+
+.submenu-content {
+    display: none;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    background-color: var(--ubuntu-grey);
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+.submenu:hover .submenu-content {
+    display: block;
+}
+
+/* Dock */
+.dock {
+    position: fixed;
+    left: 0;
+    top: 30px;
+    bottom: 0;
+    width: 60px;
+    background-color: var(--ubuntu-sidebar);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 10px;
+    gap: 10px;
+    z-index: 999;
+}
+
+.dock-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.dock-icon:hover {
+    transform: scale(1.1);
+}
+
+.dock-icon.files {
+    background-image: url('https://m.media-amazon.com/images/I/51Rf3a9YMOL.png');
+}
+
+.dock-icon.github {
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg');
+}
+
+.dock-icon.terminal {
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/GNOME_Terminal_icon_2019.svg/1200px-GNOME_Terminal_icon_2019.svg.png');
+}
+
+/* Windows */
+.window {
+    position: absolute;
+    background-color: var(--ubuntu-grey); /* Change from var(--window-bg) */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    display: none;
+    resize: both;
+    overflow: hidden;
+    z-index: 1000;
+    transition: box-shadow 0.2s;
+}
+
+.window.active {
+    display: block;
+}
+
+.window.minimized {
+    display: none;
+}
+
+.window.maximized {
+    width: calc(100vw - 60px) !important;
+    height: calc(100vh - 30px) !important;
+    top: 30px !important;
+    left: 60px !important;
+    resize: none;
+}
+
+.window-header {
+    background-color: var(--ubuntu-grey);
+    padding: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: move;
+}
+
+.window-title {
+    color: white;
+}
+
+.window-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.window-button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.window-close { background-color: #ff5f56; }
+.window-minimize { background-color: #ffbd2e; }
+.window-maximize { background-color: #27c93f; }
+
+.window-content {
+    padding: 15px;
+    color: white;
+    height: calc(100% - 36px);
+    overflow-y: auto;
+    background-color: var(--ubuntu-grey); /* Add explicit background color */
+}
+
+/* VSCode Window */
+#vscode-window {
+    width: 80%;
+    height: 80%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#vscode-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    transform: translateZ(0); /* Hardware acceleration */
+    backface-visibility: hidden; /* Reduce visual artifacts */
+    perspective: 1000; /* 3D acceleration */
+    will-change: transform; /* Hint to browser about animations */
+}
+
+/* Terminal Window Styles */
+#terminal-window {
+    width: 700px;
+    height: 400px;
+}
+
+.terminal-content {
+    background-color: var(--ubuntu-grey);
+    color: #33ff00;
+    font-family: 'Ubuntu Mono', monospace;
+    padding: 10px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.terminal-prompt {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    font-size: 14px; /* Set base font size for the prompt */
+}
+
+.terminal-input {
+    background-color: transparent;
+    color: inherit;
+    border: none;
+    outline: none;
+    width: 100%;
+    font-family: 'Ubuntu Mono', monospace;
+    margin-left: 4px;
+    font-size: inherit; /* Match parent font size */
+}
+
+.terminal-output {
+    white-space: pre-wrap;
+    margin: 4px 0;
+    font-size: 14px; /* Match the prompt font size */
+}
+
+/* File Explorer */
+#file-explorer {
+    width: 600px;
+    height: 500px;
+    top: 100px;
+    left: 100px;
+}
+
+.file-system {
+    display: flex;
+    height: 100%;
+    background-color: var(--ubuntu-grey); /* Add background color */
+}
+
+.sidebar {
+    width: 200px;
+    background-color: var(--ubuntu-grey); /* Update from rgba(0,0,0,0.3) */
+    padding: 10px;
+    border-right: 1px solid #444;
+}
+
+.main-content {
+    flex: 1;
+    padding: 10px;
+    background-color: var(--ubuntu-grey); /* Add background color */
+}
+
+.file-list {
+    list-style: none;
+}
+
+.file-item {
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+#main-file-list .file-item {
+    padding: 8px 10px;
+    border-radius: 4px;
+}
+
+#main-file-list .file-item:hover {
+    background-color: var(--ubuntu-orange);
+    transform: translateX(5px);
+}
+
+#main-file-list .file-item:active {
+    transform: scale(0.98) translateX(5px);
+}
+
+.sidebar .file-item {
+    padding: 8px 10px;
+    transition: background-color 0.2s, transform 0.1s;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.sidebar .file-item:hover {
+    background-color: var(--ubuntu-orange);
+    transform: translateX(5px);
+}
+
+.file-content {
+    display: none; /* Can remove this entirely but hiding for safety */
+}
+
+#main-file-list .file-item,
+#downloads .file-item,
+#harvard .file-item {
+    height: 36px;
+    line-height: 20px;
+}
+
+/* Remove any top/bottom padding that may cause inconsistency */
+#downloads .file-item,
+#harvard .file-item {
+    padding: 8px 10px !important;
+}
+
+.breadcrumb {
+    margin-bottom: 15px;
+    padding: 5px;
+    background-color: var(--ubuntu-grey); /* Update from rgba(0,0,0,0.3) */
+}
+
+/* Terminal Menu Styles */
+.terminal-menubar {
+    background-color: var(--ubuntu-grey);
+    padding: 5px;
+    display: flex;
+    gap: 15px;
+}
+
+.terminal-menu {
+    position: relative;
+    cursor: pointer;
+}
+
+.terminal-menu:hover .terminal-menu-content {
+    display: block;
+}
+
+.terminal-menu-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: var(--ubuntu-grey);
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1001;
+}
+
+.terminal-menu-item {
+    padding: 8px 12px;
+    color: white;
+}
+
+.terminal-menu-item:hover {
+    background-color: var(--ubuntu-orange);
+}
+
+.opacity-slider-container {
+    padding: 10px;
+    background: var(--ubuntu-grey);
+    border-radius: 4px;
+    margin: 5px;
+}
+
+.opacity-slider {
+    width: 100%;
+    accent-color: var(--ubuntu-orange);
+}
+
+.calculator-content {
+    background: var(--ubuntu-grey);
+    padding: 20px;
+    color: white;
+}
+
+.calc-display {
+    background: var(--ubuntu-purple);
+    padding: 15px;
+    text-align: right;
+    font-size: 24px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    color: white;
+}
+
+.calc-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+}
+
+.calc-button {
+    padding: 15px;
+    background: var(--ubuntu-grey);
+    border: 1px solid var(--ubuntu-orange);
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+}
+
+.calc-button:hover {
+    background: var(--ubuntu-orange);
+    color: white;
+}
+
+.user-menu {
+    position: relative;
+    cursor: pointer;
+}
+
+.user-menu-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: var(--ubuntu-grey);
+    min-width: 250px;
+    border-radius: 4px;
+    padding: 10px;
+    z-index: 1002;
+    animation: flyIn 0.3s ease forwards;
+}
+
+.user-menu:hover .user-menu-content {
+    display: block;
+}
+
+.profile-section {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid var(--ubuntu-orange);
+}
+
+.profile-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    margin-right: 10px;
+    background: url('https://www.freeiconspng.com/thumbs/profile-icon-png/profile-icon-9.png') center/cover;
+}
+
+.shutdown-button {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.power-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+}
+
+.power-icon svg {
+    fill: white;
+}
+
+.shutdown-screen {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    z-index: 10000;
+    color: white;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.loading-circle {
+    width: 48px;
+    height: 48px;
+    border: 4px solid transparent;
+    border-top: 4px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.ubuntu-logo {
+    width: 60px; /* Smaller size */
+    margin-top: 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Update terminal styles for end sequence */
+.end-terminal {
+    font-family: 'Ubuntu Mono', monospace;
+    color: white;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10001;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: black; /* Changed from background: var(--ubuntu-grey) */
+}
+
+.typewriter {
+    font-family: 'Ubuntu Mono', monospace;
+    white-space: pre;
+    text-align: center;
+    color: white;
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: white; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+.fade-out {
+    animation: fadeOut 2s ease-out forwards;
+}
+
+.notepad-textarea {
+    width: 100%;
+    height: 100%;
+    background: white;
+    color: black;
+    font-family: 'Ubuntu Mono', monospace;
+    font-size: 14px;
+    padding: 10px;
+    border: none;
+    resize: none;
+}
+
+.notepad-textarea.theme-ubuntu {
+    background: var(--ubuntu-grey);
+    color: white;
+}
+
+.notepad-textarea.theme-dark {
+    background: #1E1E1E;
+    color: #D4D4D4;
+}
+
+.notepad-textarea.theme-light {
+    background: white;
+    color: black;
+}
+
+.notepad-textarea.theme-matrix {
+    background: black;
+    color: #00FF00;
+}
+
+.notepad-theme-dropdown {
+    margin-right: 15px;
+    padding: 2px 8px;
+}
+
+.notepad-theme-dropdown .dropdown-content {
+    min-width: 180px;
+    top: 100%;
+    right: 0;
+}
+
+.notepad-theme-dropdown .dropdown-item {
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+/* Add theme classes */
+.notepad-textarea.theme-campbell {
+    background: #0C0C0C;
+    color: #CCCCCC;
+}
+
+.notepad-textarea.theme-vintage {
+    background: #000000;
+    color: #C0C0C0;
+}
+
+.notepad-textarea.theme-one-half-dark {
+    background: #282C34;
+    color: #DCDFE4;
+}
+
+.notepad-textarea.theme-solarized-dark {
+    background: #002B36;
+    color: #839496;
+}
+
+.notepad-textarea.theme-solarized-light {
+    background: #FDF6E3;
+    color: #657B83;
+}
+
+.notepad-textarea.theme-tango-dark {
+    background: #000000;
+    color: #D3D7CF;
+}
+
+.notepad-textarea.theme-tango-light {
+    background: #FFFFFF;
+    color: #000000;
+}
+
+/* Add these audio player styles */
+.audio-player-container {
+    display: flex;
+    padding: 20px;
+    background: var(--ubuntu-grey);
+    height: 100%;
+    color: white;
+}
+
+.player-left-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-right: 20px;
+}
+
+.visualizer-container {
+    width: 100%;
+    height: 300px;
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#audio-visualizer {
+    width: 100%;
+    height: 100%;
+}
+
+.player-right-section {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+}
+
+.track-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.track {
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.3s;
+}
+
+.track:hover {
+    background: var(--ubuntu-orange);
+}
+
+.track.active {
+    background: var(--ubuntu-orange);
+}
+
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+}
+
+.volume-slider {
+    flex: 1;
+    accent-color: var(--ubuntu-orange);
+}
+
+.volume-icon {
+    width: 24px;
+    height: 24px;
+    filter: invert(1);
+}
+
+.player-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.control-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 50%;
+    transition: background 0.3s;
+}
+
+.control-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Add these styles */
+.browser-toolbar {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    background: var(--ubuntu-grey);
+}
+
+.browser-toolbar button {
+    padding: 5px 10px;
+    background: none;
+    border: 1px solid var(--ubuntu-orange);
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.browser-toolbar button:hover {
+    background: var(--ubuntu-orange);
+}
+
+#url-bar {
+    flex: 1;
+    padding: 5px 10px;
+    border: 1px solid var(--ubuntu-orange);
+    background: var(--ubuntu-grey);
+    color: white;
+    border-radius: 4px;
+}
+
+#browser-frame {
+    width: 100%;
+    height: calc(100% - 50px);
+    border: none;
+}
+
+@keyframes flyIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&family=Ubuntu+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="toolbar">
+    <div class="toolbar-left">
+        <div class="dropdown">
+            <span>Applications</span>
+            <div class="dropdown-content">
+                <div class="submenu">
+                    <div class="dropdown-item">
+                        <span>System Tools ▶</span>
+                        <div class="submenu-content">
+                            <div class="dropdown-item" onclick="toggleWindow('calculator-window')">
+                                <img class="menu-icon" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/GNOME_Calculator_icon_2018.svg/1200px-GNOME_Calculator_icon_2018.svg.png" alt="Calculator">
+                                Calculator
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="submenu">
+                    <div class="dropdown-item">
+                        <span>Browser ▶</span>
+                        <div class="submenu-content">
+                            <div class="dropdown-item" onclick="toggleWindow('browser-window')">
+                                <img class="menu-icon" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Google_Chrome_icon_%28February_2022%29.svg/2048px-Google_Chrome_icon_%28February_2022%29.svg.png" alt="Chrome">
+                                Chrome
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="submenu">
+                    <div class="dropdown-item">
+                        <span>Games ▶</span>
+                        <div class="submenu-content">
+                            <div class="dropdown-item" onclick="toggleWindow('game-4096-window')">
+                                <img class="menu-icon" src="https://img.utdstc.com/icon/83e/411/83e41112f017b5102cb698ba1ed26d4507b82c3673e9d44854e497ad9c3081db:100" alt="4096">
+                                4096
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="submenu">
+                    <div class="dropdown-item">
+                        <span>Others ▶</span>
+                        <div class="submenu-content">
+                            <div class="dropdown-item" onclick="toggleWindow('terminal-window')">
+                                <img class="menu-icon" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/GNOME_Terminal_icon_2019.svg/1200px-GNOME_Terminal_icon_2019.svg.png" alt="Terminal">
+                                Terminal
+                            </div>
+                            <div class="dropdown-item" onclick="openNotepad()">
+                                <img class="menu-icon" src="https://upload.wikimedia.org/wikipedia/commons/f/f5/Notepad_plus_plus.png" alt="Notepad">
+                                Notepad++
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="submenu">
+                    <div class="dropdown-item">
+                        <span>Audio ▶</span>
+                        <div class="submenu-content">
+                            <div class="dropdown-item" onclick="toggleWindow('audio-player')">
+                                <img class="menu-icon" src="https://cdn-icons-png.flaticon.com/512/5504/5504572.png" alt="MP3 Player">
+                                MP3 Player
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="toolbar-right">
+        <span id="date-time">Loading...</span>
+        <div class="user-menu">
+            <span>Qrexxed</span>
+            <div class="user-menu-content">
+                <div class="profile-section">
+                    <img class="profile-avatar" src="https://avatars.githubusercontent.com/u/117946311?v=4" alt="Profile">
+                    <div>Qrexxed</div>
+                </div>
+                <div class="shutdown-button" onclick="initiateReboot()">
+                    <div class="power-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z"/>
+                        </svg>
+                    </div>
+                    Reboot
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="dock">
+    <div class="dock-icon files" onclick="toggleWindow('file-explorer')"></div>
+    <div class="dock-icon github" onclick="toggleWindow('vscode-window')"></div>
+    <div class="dock-icon terminal" onclick="toggleWindow('terminal-window')"></div>
+</div>
+
+<div id="file-explorer" class="window">
+    <div class="window-header">
+        <div class="window-title">Files</div>
+        <div class="window-controls">
+            <div class="window-button window-minimize" onclick="minimizeWindow('file-explorer')"></div>
+            <div class="window-button window-maximize" onclick="maximizeWindow('file-explorer')"></div>
+            <div class="window-button window-close" onclick="toggleWindow('file-explorer')"></div>
+        </div>
+    </div>
+    <div class="window-content">
+        <div class="file-system">
+            <div class="sidebar">
+                <div class="file-list">
+                    <div class="file-item" onclick="navigateTo('home')">🏠 Home</div>
+                    <div class="file-item" onclick="navigateTo('downloads')">📥 Downloads</div>
+                    <div class="file-item" onclick="navigateTo('harvard')">📁 Harvard</div>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="breadcrumb">Home</div>
+                <div class="file-list" id="main-file-list">
+                    <div class="file-item" onclick="openFile('about')">📄 about.txt</div>
+                    <div class="file-item" onclick="openFile('projects')">📄 projects.md</div>
+                    <div class="file-item" onclick="openFile('skills')">📄 skills.txt</div>
+                    <div class="file-item" onclick="openFile('contact')">📄 contact.json</div>
+                </div>
+                
+                <div id="downloads" class="file-content">
+                    <div class="file-item" style="padding: 8px 0;" onclick="window.location.href='https://github.com/unerrored/StocksPredictor/archive/refs/heads/main.zip'">
+                        📦 StocksPredictor-main.zip
+                    </div>
+                    <div class="file-item" style="padding: 8px 0;" onclick="window.location.href='https://github.com/unerrored/Unluac/archive/refs/heads/main.zip'">
+                        📦 Unluac-main.zip
+                    </div>
+                </div>
+                <div id="harvard" class="file-content">
+                    <div class="file-item" style="padding: 8px 0;" onclick="window.location.href='https://usingsources.fas.harvard.edu/sites/projects.iq.harvard.edu/files/sources/files/why_use_sources.pdf'">
+                        📄 why_use_sources.pdf
+                    </div>
+                    <div class="file-item" style="padding: 8px 0;" onclick="window.location.href='https://usingsources.fas.harvard.edu/sites/projects.iq.harvard.edu/files/sources/files/citing_sources.pdf'">
+                        📄 citing_sources.pdf
+                    </div>
+                    <div class="file-item" style="padding: 8px 0;" onclick="window.location.href='https://usingsources.fas.harvard.edu/sites/projects.iq.harvard.edu/files/sources/files/avoiding_plagiarism.pdf'">
+                        📄 avoiding_plagiarism.pdf
+                    </div>
+                    <div class="file-item" style="padding: 8px 0;" onclick="window.location.href='https://www.pdfiles.net/storage/Books/for-Dummies/windows_10_for_dummies_3rd_edition.pdf'">
+                        📄 windows_10_for_dummies_3rd_edition.pdf
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="vscode-window" class="window">
+    <div class="window-header">
+        <div class="window-title">Visual Studio Code - Stocks Predictor</div>
+        <div class="window-controls">
+            <div class="window-button window-minimize" onclick="minimizeWindow('vscode-window')"></div>
+            <div class="window-button window-maximize" onclick="maximizeWindow('vscode-window')"></div>
+            <div class="window-button window-close" onclick="toggleWindow('vscode-window')"></div>
+        </div>
+    </div>
+    <div class="window-content">
+        <iframe id="vscode-frame" src="https://github1s.com/unerrored/StocksPredictor"></iframe>
+    </div>
+</div>
+
+<div id="terminal-window" class="window">
+    <div class="window-header">
+        <div class="window-title">Terminal</div>
+        <div class="window-controls">
+            <div class="window-button window-minimize" onclick="minimizeWindow('terminal-window')"></div>
+            <div class="window-button window-maximize" onclick="maximizeWindow('terminal-window')"></div>
+            <div class="window-button window-close" onclick="toggleWindow('terminal-window')"></div>
+        </div>
+    </div>
+    <div class="terminal-menubar">
+        <div class="terminal-menu">
+            <span>File</span>
+            <div class="terminal-menu-content">
+                <div class="terminal-menu-item" onclick="newTerminalTab()">New Tab</div>
+                <div class="terminal-menu-item" onclick="closeTerminal()">Close</div>
+            </div>
+        </div>
+        <div class="terminal-menu">
+            <span>View</span>
+            <div class="terminal-menu-content">
+                <div class="terminal-menu-item" onclick="toggleFullscreen()">Full Screen</div>
+            </div>
+        </div>
+        <div class="terminal-menu">
+            <span>Terminal</span>
+            <div class="terminal-menu-content">
+                <div class="terminal-menu-item" onclick="changePalette('default')">Default Colors</div>
+                <div class="terminal-menu-item" onclick="changePalette('solarized')">Solarized Dark</div>
+                <div class="terminal-menu-item" onclick="changePalette('monokai')">Monokai</div>
+                <div class="terminal-menu-item" onclick="changePalette('ubuntu')">Ubuntu</div>
+                <div class="terminal-menu-item" onclick="changePalette('dracula')">Dracula</div>
+                <div class="terminal-menu-item" onclick="changePalette('nord')">Nord</div>
+            </div>
+        </div>
+    </div>
+    <div class="window-content">
+        <div class="terminal-content" id="terminal-content">
+            <div class="terminal-prompt">
+                <span id="terminal-prefix">
+                    <span style="color: #007F00;">qrexxed</span><span style="color: #007F00;">@</span><span style="color: #007F00;">hp</span><span style="color: white;">:</span><span style="color: #000080;">~</span><span style="color: white;">$ </span>
+                </span>
+                <input type="text" class="terminal-input" onkeypress="handleTerminalInput(event)">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="calculator-window" class="window">
+    <div class="window-header">
+        <div class="window-title">Calculator</div>
+        <div class="window-controls">
+            <div class="window-button window-minimize" onclick="minimizeWindow('calculator-window')"></div>
+            <div class="window-button window-maximize" onclick="maximizeWindow('calculator-window')"></div>
+            <div class="window-button window-close" onclick="toggleWindow('calculator-window')"></div>
+        </div>
+    </div>
+    <div class="window-content calculator-content">
+        <div class="calc-display">0</div>
+        <div class="calc-buttons">
+            <div class="calc-button">7</div>
+            <div class="calc-button">8</div>
+            <div class="calc-button">9</div>
+            <div class="calc-button">/</div>
+            <div class="calc-button">4</div>
+            <div class="calc-button">5</div>
+            <div class="calc-button">6</div>
+            <div class="calc-button">*</div>
+            <div class="calc-button">1</div>
+            <div class="calc-button">2</div>
+            <div class="calc-button">3</div>
+            <div class="calc-button">-</div>
+            <div class="calc-button">0</div>
+            <div class="calc-button">.</div>
+            <div class="calc-button">=</div>
+            <div class="calc-button">+</div>
+        </div>
+    </div>
+</div>
+
+<div id="audio-player" class="window">
+    <div class="window-header">
+        <div class="window-title">MP3 Player</div>
+        <div class="window-controls">
+            <div class="window-button window-minimize" onclick="minimizeWindow('audio-player')"></div>
+            <div class="window-button window-maximize" onclick="maximizeWindow('audio-player')"></div>
+            <div class="window-button window-close" onclick="toggleWindow('audio-player')"></div>
+        </div>
+    </div>
+    <div class="window-content">
+        <div class="audio-player-container">
+            <div class="player-left-section">
+                <div class="track-title"></div>
+                <div class="visualizer-container">
+                    <canvas id="audio-visualizer"></canvas>
+                </div>
+                <div class="player-controls">
+                    <button class="control-button" id="playPauseBtn" onclick="togglePlayPause()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="player-right-section">
+                <div class="track-list">
+                    <div class="track" onclick="playAudio('Mii Editor - Mii Maker (Wii U) Music [ ezmp3.cc ].mp3')">
+                        Mii Editor - Mii Maker
+                    </div>
+                    <div class="track" onclick="playAudio('dj quads - its near.mp3')">
+                        DJ Quads - Its Near
+                    </div>
+                </div>
+                <div class="volume-control">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Speaker_Icon.svg" alt="Volume" class="volume-icon">
+                    <input type="range" class="volume-slider" min="0" max="100" value="50" oninput="if(currentAudio) currentAudio.volume = this.value/100">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="game-4096-window" class="window">
+    <div class="window-header">
+        <div class="window-title">4096</div>
+        <div class="window-controls">
+            <div class="window-button window-minimize" onclick="minimizeWindow('game-4096-window')"></div>
+            <div class="window-button window-maximize" onclick="maximizeWindow('game-4096-window')"></div>
+            <div class="window-button window-close" onclick="toggleWindow('game-4096-window')"></div>
+        </div>
+    </div>
+    <div class="window-content">
+        <iframe src="https://mattjmattj.github.io/4096/" style="width:100%;height:100%;border:none;"></iframe>
+    </div>
+</div>
+
+<div id="settings-window" class="window">
+    <div class="window-header">
+        <div class="window-title">Settings</div>
+        <div class="window-controls">
+            <div class="window-button window-minimize" onclick="minimizeWindow('settings-window')"></div>
+            <div class="window-button window-maximize" onclick="maximizeWindow('settings-window')"></div>
+            <div class="window-button window-close" onclick="toggleWindow('settings-window')"></div>
+        </div>
+    </div>
+    <div class="window-content settings-content">
+        <!-- Settings content here -->
+    </div>
+</div>
+
+<div id="browser-window" class="window">
+    <div class="window-header">
+        <div class="window-title">Chrome</div>
+        <div class="window-controls">
+            <div class="window-button window-minimize" onclick="minimizeWindow('browser-window')"></div>
+            <div class="window-button window-maximize" onclick="maximizeWindow('browser-window')"></div>
+            <div class="window-button window-close" onclick="toggleWindow('browser-window')"></div>
+        </div>
+    </div>
+    <div class="window-content">
+        <div class="browser-toolbar">
+            <button onclick="browserBack()">◀</button>
+            <button onclick="browserForward()">▶</button>
+            <button onclick="browserRefresh()">↻</button>
+            <input type="text" id="url-bar" onkeypress="handleUrlInput(event)" 
+                   placeholder="Enter URL (e.g., google.com) or search terms">
+        </div>
+        <iframe id="browser-frame" 
+                src="about:blank"
+                sandbox="allow-scripts allow-popups allow-forms"
+                style="width:100%;height:calc(100% - 50px);border:none;">
+        </iframe>
+    </div>
+</div>
+
+<div class="shutdown-screen">
+    <div class="loading-circle"></div>
+    <img class="ubuntu-logo" 
+         src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/UbuntuCoF.svg/2048px-UbuntuCoF.svg.png" 
+         alt="Ubuntu Logo">
+</div>
+
+<div class="end-terminal" style="display: none;">
+    <div class="terminal-content">
+        <div class="typewriter"></div>
+    </div>
+</div>
+
+<style id="terminal-styles">
+    .terminal-prompt {
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        font-size: 14px;
+    }
+
+    .terminal-input {
+        background-color: transparent;
+        color: inherit;
+        border: none;
+        outline: none;
+        width: 100%;
+        font-family: 'Ubuntu Mono', monospace;
+        margin-left: 4px;
+        font-size: inherit;
+    }
+
+    .terminal-output {
+        white-space: pre-wrap;
+        margin: 4px 0;
+        font-size: 14px;
+    }
+</style>
+
+<script>
+let dragTarget = null;
+let dragOffsetX = 0;
+let dragOffsetY = 0;
+
+let mediaSource = null; // Add this variable to track the media source
+
+function dragMouseDown(e) {
+    // Only allow dragging from the header
+    if (!e.target.closest('.window-header')) return;
+    
+    // Get the window element
+    dragTarget = e.target.closest('.window');
+    if (!dragTarget) return;
+
+    // Bring window to front when starting drag
+    bringToFront(dragTarget);
+
+    // Get current position relative to viewport
+    const rect = dragTarget.getBoundingClientRect();
+    
+    // Calculate the mouse offset from the window's top-left corner
+    dragOffsetX = e.clientX - rect.left;
+    dragOffsetY = e.clientY - rect.top;
+
+    // Ensure the window is using absolute positioning
+    dragTarget.style.position = 'absolute';
+
+    // Add the move and up listeners
+    document.addEventListener('mousemove', dragMouseMove);
+    document.addEventListener('mouseup', dragMouseUp);
+
+    // Prevent text selection during drag
+    e.preventDefault();
+}
+
+function dragMouseMove(e) {
+    if (!dragTarget) return;
+
+    // Don't allow dragging if window is maximized
+    if (dragTarget.classList.contains('maximized')) return;
+
+    // Request animation frame for smoother movement
+    requestAnimationFrame(() => {
+        // Calculate new position
+        let newX = e.clientX - dragOffsetX;
+        let newY = e.clientY - dragOffsetY;
+
+        // Keep window within viewport bounds with proper offsets
+        const minX = 60; // Account for dock
+        const minY = 30; // Account for toolbar
+        const maxX = window.innerWidth - dragTarget.offsetWidth;
+        const maxY = window.innerHeight - dragTarget.offsetHeight;
+
+        // Constrain the position more strictly
+        if (newY < minY) newY = minY;
+        if (newY > maxY) newY = maxY;
+        if (newX < minX) newX = minX;
+        if (newX > maxX) newX = maxX;
+
+        // Use absolute positioning instead of transform
+        dragTarget.style.left = `${newX}px`;
+        dragTarget.style.top = `${newY}px`;
+        
+        // Remove transform to prevent any potential stuck issues
+        dragTarget.style.transform = 'none';
+    });
+}
+
+function dragMouseUp() {
+    if (dragTarget) {
+        // Reset any temporary styles
+        dragTarget.style.transform = 'none';
+    }
+    
+    // Clear the drag target
+    dragTarget = null;
+    
+    // Remove the listeners
+    document.removeEventListener('mousemove', dragMouseMove);
+    document.removeEventListener('mouseup', dragMouseUp);
+}
+
+// Track active windows and z-index
+let activeWindows = new Set();
+let zIndex = 1000;
+
+function toggleWindow(windowId) {
+    const window = document.getElementById(windowId);
+    if (!window) return;
+    
+    if (window.classList.contains('active')) {
+        // Hide window
+        window.classList.remove('active');
+        activeWindows.delete(windowId);
+    } else {
+        // Show window
+        window.classList.add('active');
+        activeWindows.add(windowId);
+        bringToFront(window);
+    }
+}
+
+function minimizeWindow(windowId) {
+    const window = document.getElementById(windowId);
+    if (!window) return;
+    
+    window.classList.add('minimized');
+    window.classList.remove('active');
+    activeWindows.delete(windowId);
+}
+
+function maximizeWindow(windowId) {
+    const window = document.getElementById(windowId);
+    if (!window) return;
+    
+    window.classList.toggle('maximized');
+    if (window.classList.contains('maximized')) {
+        // Store original position and size for restoration
+        window.dataset.originalStyle = window.getAttribute('style');
+        window.style.top = '30px';
+        window.style.left = '60px';
+    } else {
+        // Restore original position and size
+        const originalStyle = window.dataset.originalStyle;
+        if (originalStyle) {
+            window.setAttribute('style', originalStyle);
+        }
+    }
+}
+
+function bringToFront(window) {
+    if (!window) return;
+    zIndex++;
+    window.style.zIndex = zIndex;
+}
+
+// Add event listeners to make windows draggable
+document.addEventListener('DOMContentLoaded', () => {
+    const windows = document.querySelectorAll('.window');
+    windows.forEach(window => {
+        window.addEventListener('mousedown', dragMouseDown);
+        // Initially position windows in the center if not already positioned
+        if (!window.style.top && !window.style.left) {
+            window.style.top = '50%';
+            window.style.left = '50%';
+            window.style.transform = 'translate(-50%, -50%)';
+        }
+    });
+});
+
+// Audio player functionality
+let currentAudio = null;
+let audioContext = null;
+let analyser = null;
+let visualizerCanvas = null;
+let visualizerCtx = null;
+let animationFrame = null;
+
+function initializeAudioVisualizer() {
+    // Get canvas element
+    visualizerCanvas = document.getElementById('audio-visualizer');
+    if (!visualizerCanvas) {
+        console.warn('Could not find audio visualizer canvas');
+        return;
+    }
+
+    // Get canvas context
+    visualizerCtx = visualizerCanvas.getContext('2d');
+    if (!visualizerCtx) {
+        console.warn('Could not get canvas context');
+        return;
+    }
+
+    // Set canvas size to match container
+    const container = visualizerCanvas.parentElement;
+    if (container) {
+        visualizerCanvas.width = container.clientWidth;
+        visualizerCanvas.height = container.clientHeight;
+    }
+
+    // Initialize audio context and analyzer if not already done
+    if (!audioContext) {
+        try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 1024;
+            analyser.smoothingTimeConstant = 0.85;
+        } catch (e) {
+            console.warn('Could not initialize audio context:', e);
+        }
+    }
+
+    // Add resize handler
+    window.addEventListener('resize', () => {
+        if (container) {
+            visualizerCanvas.width = container.clientWidth;
+            visualizerCanvas.height = container.clientHeight;
+        }
+    });
+}
+
+// Add listener to handle visualizer initialization when audio player is shown
+document.getElementById('audio-player').addEventListener('click', () => {
+    if (!visualizerCanvas) {
+        initializeAudioVisualizer();
+    }
+});
+
+function updatePlayPauseButton() {
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    if (!playPauseBtn) return;
+    
+    // Update button icon based on audio state
+    if (!currentAudio || currentAudio.paused) {
+        playPauseBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                <path d="M8 5v14l11-7z"/>
+            </svg>`;
+    } else {
+        playPauseBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+            </svg>`;
+    }
+}
+
+function playAudio(filename) {
+    if (!filename) {
+        console.warn('No filename provided for playAudio');
+        return;
+    }
+
+    // Create promise to handle audio state changes
+    const playPromise = new Promise((resolve, reject) => {
+        // Stop current audio if playing
+        if (currentAudio) {
+            try {
+                currentAudio.pause();
+                if (mediaSource) {
+                    mediaSource.disconnect();
+                }
+                currentAudio = null;
+            } catch (e) {
+                console.warn('Error stopping previous audio:', e);
+            }
+        }
+        
+        if (animationFrame) {
+            cancelAnimationFrame(animationFrame);
+        }
+
+        // Create new audio context if needed
+        if (!audioContext) {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 1024;
+                analyser.smoothingTimeConstant = 0.85;
+            } catch (e) {
+                reject('Could not create audio context: ' + e);
+                return;
+            }
+        }
+
+        // Create and setup new audio element
+        try {
+            currentAudio = new Audio(filename);
+            
+            currentAudio.addEventListener('error', (e) => {
+                reject('Audio error: ' + e);
+            });
+            
+            currentAudio.addEventListener('canplay', () => {
+                try {
+                    mediaSource = audioContext.createMediaElementSource(currentAudio);
+                    mediaSource.connect(analyser);
+                    analyser.connect(audioContext.destination);
+                    
+                    // Use the promise to handle play state
+                    currentAudio.play()
+                        .then(() => {
+                            resolve();
+                            
+                            // Update UI
+                            updatePlayPauseButton();
+                            const titleElement = document.querySelector('.track-title');
+                            if (titleElement) {
+                                titleElement.textContent = filename.split('/').pop();
+                            }
+                            
+                            drawVisualizer();
+                            
+                            // Update track selection UI
+                            const tracks = document.querySelectorAll('.track');
+                            tracks.forEach(track => {
+                                track.classList.remove('active');
+                                if (track.textContent.trim() === filename.split('/').pop().replace('.mp3', '')) {
+                                    track.classList.add('active');
+                                }
+                            });
+                        })
+                        .catch(e => reject('Playback error: ' + e));
+                } catch (e) {
+                    reject('Error setting up audio: ' + e);
+                }
+            });
+        } catch (e) {
+            reject('Error creating audio element: ' + e);
+        }
+    });
+
+    // Handle the promise
+    playPromise.catch(error => {
+        console.warn('Audio playback error:', error);
+        // Reset state on error
+        if (currentAudio) {
+            currentAudio = null;
+        }
+        updatePlayPauseButton();
+    });
+}
+
+// Update togglePlayPause with better state handling
+function togglePlayPause() {
+    if (!currentAudio) {
+        // If no audio is playing, start with first track
+        const firstTrack = document.querySelector('.track');
+        if (firstTrack) {
+            const trackName = firstTrack.textContent.trim();
+            playAudio(trackName + '.mp3');
+        }
+        return;
+    }
+
+    // Create promise for play/pause state change
+    const statePromise = new Promise((resolve, reject) => {
+        try {
+            if (currentAudio.paused) {
+                currentAudio.play()
+                    .then(() => resolve('playing'))
+                    .catch(e => reject(e));
+            } else {
+                currentAudio.pause();
+                resolve('paused');
+            }
+        } catch (e) {
+            reject(e);
+        }
+    });
+
+    // Handle the promise
+    statePromise
+        .then(() => {
+            updatePlayPauseButton();
+        })
+        .catch(error => {
+            console.warn('Error toggling play state:', error);
+            // Reset state on error
+            if (currentAudio) {
+                currentAudio.pause();
+            }
+            updatePlayPauseButton();
+        });
+}
+
+function drawVisualizer() {
+    // Initialize if not already done
+    if (!analyser || !visualizerCanvas || !visualizerCtx) {
+        initializeAudioVisualizer();
+        // If still not initialized after trying, return
+        if (!analyser || !visualizerCanvas || !visualizerCtx) {
+            console.warn('Could not initialize audio visualizer');
+            return;
+        }
+    }
+
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    const width = visualizerCanvas.width;
+    const height = visualizerCanvas.height;
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const radius = Math.min(width, height) / 3;
+    
+    function draw() {
+        animationFrame = requestAnimationFrame(draw);
+        
+        analyser.getByteFrequencyData(dataArray);
+        
+        // Clear background
+        visualizerCtx.fillStyle = '#333333';
+        visualizerCtx.fillRect(0, 0, width, height);
+        
+        // Draw circular rainbow visualizer
+        const barCount = bufferLength;
+        const barWidth = (2 * Math.PI) / barCount;
+        
+        for (let i = 0; i < barCount; i++) {
+            const barHeight = (dataArray[i] / 255) * (radius * 0.8); // Scale bar height
+            const angle = i * barWidth;
+            
+            // Calculate rainbow color
+            const hue = (i / barCount) * 360;
+            visualizerCtx.fillStyle = `hsl(${hue}, 100%, 50%)`;
+            
+            // Calculate bar positions
+            const innerX = centerX + Math.cos(angle) * radius;
+            const innerY = centerY + Math.sin(angle) * radius;
+            const outerX = centerX + Math.cos(angle) * (radius + barHeight);
+            const outerY = centerY + Math.sin(angle) * (radius + barHeight);
+            
+            // Draw bar
+            visualizerCtx.beginPath();
+            visualizerCtx.moveTo(innerX, innerY);
+            visualizerCtx.lineTo(outerX, outerY);
+            visualizerCtx.lineWidth = 2;
+            visualizerCtx.strokeStyle = visualizerCtx.fillStyle;
+            visualizerCtx.stroke();
+            
+            // Draw connecting lines between bars
+            if (i > 0) {
+                const prevAngle = (i - 1) * barWidth;
+                const prevBarHeight = (dataArray[i - 1] / 255) * (radius * 0.8);
+                const prevOuterX = centerX + Math.cos(prevAngle) * (radius + prevBarHeight);
+                const prevOuterY = centerY + Math.sin(prevAngle) * (radius + prevBarHeight);
+                
+                visualizerCtx.beginPath();
+                visualizerCtx.moveTo(prevOuterX, prevOuterY);
+                visualizerCtx.lineTo(outerX, outerY);
+                visualizerCtx.stroke();
+            }
+        }
+        
+        // Draw center circle
+        visualizerCtx.beginPath();
+        visualizerCtx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+        visualizerCtx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        visualizerCtx.stroke();
+    }
+    
+    draw();
+}
+
+// Initialize visualizer when audio player window is opened
+document.getElementById('audio-player').addEventListener('click', () => {
+    if (!visualizerCanvas) {
+        initializeAudioVisualizer();
+    }
+});
+
+// Added function to change terminal palette
+function changePalette(theme) {
+    const terminal = document.querySelector('.terminal-content');
+    if (!terminal) return;
+
+    // Remove any existing theme classes
+    terminal.classList.remove('theme-default', 'theme-solarized', 'theme-monokai', 'theme-ubuntu', 'theme-dracula', 'theme-nord');
+    
+    // Apply the new theme
+    switch (theme) {
+        case 'default':
+            terminal.style.backgroundColor = '#2C001E';
+            terminal.style.color = '#33ff00';
+            break;
+        case 'solarized':
+            terminal.style.backgroundColor = '#002b36';
+            terminal.style.color = '#839496';
+            break;
+        case 'monokai':
+            terminal.style.backgroundColor = '#272822';
+            terminal.style.color = '#f8f8f2';
+            break;
+        case 'ubuntu':
+            terminal.style.backgroundColor = '#300a24';
+            terminal.style.color = '#ffffff';
+            break;
+        case 'dracula':
+            terminal.style.backgroundColor = '#282a36';
+            terminal.style.color = '#f8f8f2';
+            break;
+        case 'nord':
+            terminal.style.backgroundColor = '#2e3440';
+            terminal.style.color = '#d8dee9';
+            break;
+    }
+}
+
+function createPrompt() {
+    const promptDiv = document.createElement('div');
+    promptDiv.className = 'terminal-prompt';
+    
+    // Create the prefix span
+    const prefixSpan = document.createElement('span');
+    prefixSpan.innerHTML = `<span style="color: #007F00;">qrexxed</span><span style="color: #007F00;">@</span><span style="color: #007F00;">hp</span><span style="color: white;">:</span><span style="color: #000080;">~</span><span style="color: white;">$ </span>`;
+    
+    // Create the input
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'terminal-input';
+    input.onkeypress = handleTerminalInput;
+    
+    // Add prefix and input to prompt div
+    promptDiv.appendChild(prefixSpan);
+    promptDiv.appendChild(input);
+    
+    return promptDiv;
+}
+
+function updateTerminalOutput(command) {
+    const terminalContent = document.querySelector('.terminal-content');
+    const currentPrompt = terminalContent.querySelector('.terminal-prompt');
+
+    // Process command and show output
+    if (command) {
+        const outputDiv = document.createElement('div');
+        outputDiv.className = 'terminal-output';
+        
+        // Process command
+        switch(command.toLowerCase()) {
+            case 'help':
+                outputDiv.textContent = `Available commands:
+                    help - Show this help message
+                    clear - Clear terminal
+                    ls - List files
+                    pwd - Print working directory
+                    whoami - Show current user
+                    exit - Close terminal window`;
+                break;
+            case 'clear':
+                terminalContent.innerHTML = '';
+                const newPrompt = createPrompt();
+                terminalContent.appendChild(newPrompt);
+                return;
+            case 'ls':
+                outputDiv.innerHTML = '<span style="color: #000080;">Home</span>&nbsp;&nbsp;&nbsp;<span style="color: #000080;">Downloads</span>&nbsp;&nbsp;&nbsp;<span style="color: #000080;">Harvard</span>';
+                break;
+            case 'pwd':
+                outputDiv.textContent = '/';
+                break;
+            case 'whoami':
+                outputDiv.textContent = 'qrexxed';
+                break;
+            case 'exit':
+                toggleWindow('terminal-window');
+                return;
+            case '':
+                return;
+            default:
+                outputDiv.textContent = `Command not found: ${command}`;
+        }
+
+        // Add the output if it exists and clear previous output
+        const previousOutput = terminalContent.querySelectorAll('.terminal-output');
+        previousOutput.forEach(output => output.remove());
+        
+        if (outputDiv.textContent || outputDiv.innerHTML) {
+            terminalContent.insertBefore(outputDiv, currentPrompt.nextSibling);
+        }
+    }
+
+    // Clear current input
+    const currentInput = currentPrompt.querySelector('.terminal-input');
+    if (currentInput) {
+        currentInput.value = '';
+        currentInput.focus();
+    }
+
+    // Scroll to bottom
+    terminalContent.scrollTop = terminalContent.scrollHeight;
+}
+
+function updateTerminalPrefix() {
+    const prefixSpan = document.getElementById('terminal-prefix');
+    if (prefixSpan) {
+        // Using a more saturated dark green (#007F00 instead of #006400)
+        prefixSpan.innerHTML = `<span style="color: #007F00;">qrexxed</span><span style="color: #007F00;">@</span><span style="color: #007F00;">hp</span><span style="color: white;">:</span><span style="color: #000080;">~</span><span style="color: white;">$ </span>`;
+    }
+}
+
+function handleTerminalInput(e) {
+    if (e.key === 'Enter') {
+        const input = e.target;
+        const command = input.value.trim();
+        updateTerminalOutput(command);
+    }
+}
+
+// Remove or comment out this line:
+// setInterval(updateTerminalPrefix, 5000);
+function updateDateTime() {
+    const now = new Date();
+    const options = { 
+        weekday: 'short', 
+        month: 'short', 
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit'
+    };
+    document.getElementById('date-time').textContent = now.toLocaleString('en-US', options);
+}
+
+// Update immediately and every minute
+updateDateTime();
+setInterval(updateDateTime, 60000);
+
+function navigateTo(location) {
+    // Hide all file content sections
+    document.querySelectorAll('.file-content').forEach(content => {
+        content.style.display = 'none';
+    });
+    
+    // Handle main file list visibility
+    const mainFileList = document.getElementById('main-file-list');
+    if (location === 'home') {
+        mainFileList.style.display = 'block';
+    } else {
+        mainFileList.style.display = 'none';
+    }
+    
+    // Show the selected location's content
+    const contentElement = document.getElementById(location);
+    if (contentElement) {
+        contentElement.style.display = 'block';
+    }
+    
+    // Update breadcrumb
+    document.querySelector('.breadcrumb').textContent = location.charAt(0).toUpperCase() + location.slice(1);
+}
+
+function openFile(fileId) {
+    let content = '';
+    
+    // Set content based on file type
+    switch(fileId) {
+        case 'about':
+            content = `Hallo! I'm Qrexxed, a chill guy.`;
+            break;
+        case 'projects':
+            content = `# My Projects
+- StocksPredictor: Stock market analysis tool using CNN and Tensorflow
+- Unluac: Lua multi-decompiler (W.I.P)
+- Portfolio: The interactive Ubuntu-themed portfolio you are on.`;
+            break;
+        case 'skills':
+            content = `Technical Skills:
+- Programming Languages: Python & C#
+- Web Development: HTML & CSS
+- Version Control: Git`;
+            break;
+        case 'contact':
+            content = `{
+    "email": "Could not retrieve email, Access Denied",
+    "github": "github.com/qrexpy",
+    "discord": "z1lh"
+}`;
+            break;
+        default:
+            content = 'File not found';
+    }
+
+    // Create notepad window with updated content
+    let notepadWindow = document.getElementById('notepad-window');
+    if (!notepadWindow) {
+        notepadWindow = document.createElement('div');
+        notepadWindow.id = 'notepad-window';
+        notepadWindow.className = 'window';
+        notepadWindow.innerHTML = `
+            <div class="window-header">
+                <div class="window-title">Notepad++ - ${fileId}${fileId === 'projects' ? '.md' : '.txt'}</div>
+                <div class="window-controls">
+                    <div class="window-button window-minimize" onclick="minimizeWindow('notepad-window')"></div>
+                    <div class="window-button window-maximize" onclick="maximizeWindow('notepad-window')"></div>
+                    <div class="window-button window-close" onclick="toggleWindow('notepad-window')"></div>
+                </div>
+            </div>
+            <div class="window-content">
+                <textarea class="notepad-textarea theme-ubuntu">${content}</textarea>
+            </div>
+        `;
+        document.body.appendChild(notepadWindow);
+    } else {
+        // Update existing notepad window
+        notepadWindow.querySelector('.window-title').textContent = `Notepad++ - ${fileId}${fileId === 'projects' ? '.md' : '.txt'}`;
+        notepadWindow.querySelector('.notepad-textarea').value = content;
+    }
+
+    // Show window and bring to front
+    notepadWindow.classList.add('active');
+    bringToFront(notepadWindow);
+}
+
+// Add new function to open notepad with content
+function openNotepadWithContent(fileId) {
+    const fileContent = document.getElementById(fileId);
+    if (!fileContent) return;
+
+    // Create notepad window if it doesn't exist
+    let notepadWindow = document.getElementById('notepad-window');
+    if (!notepadWindow) {
+        notepadWindow = document.createElement('div');
+        notepadWindow.id = 'notepad-window';
+        notepadWindow.className = 'window';
+        notepadWindow.innerHTML = `
+            <div class="window-header">
+                <div class="window-title">Notepad++ - ${fileId}</div>
+                <div class="window-controls">
+                    <div class="window-button window-minimize" onclick="minimizeWindow('notepad-window')"></div>
+                    <div class="window-button window-maximize" onclick="maximizeWindow('notepad-window')"></div>
+                    <div class="window-button window-close" onclick="toggleWindow('notepad-window')"></div>
+                </div>
+            </div>
+            <div class="window-content notepad-content">
+                <textarea class="notepad-textarea theme-ubuntu">${fileContent.textContent.trim()}</textarea>
+            </div>
+        `;
+        document.body.appendChild(notepadWindow);
+    } else {
+        // Update existing notepad window
+        notepadWindow.querySelector('.window-title').textContent = `Notepad++ - ${fileId}`;
+        notepadWindow.querySelector('.notepad-textarea').value = fileContent.textContent.trim();
+    }
+
+    // Show the window and bring to front
+    notepadWindow.classList.add('active');
+    bringToFront(notepadWindow);
+}
+
+// Add window drag handling for notepad
+document.addEventListener('DOMContentLoaded', () => {
+    if (!document.getElementById('notepad-window')) {
+        const notepadWindow = document.createElement('div');
+        notepadWindow.id = 'notepad-window';
+        notepadWindow.className = 'window';
+        document.body.appendChild(notepadWindow);
+    }
+});
+
+function handleCalculatorClick(e) {
+    if (!e.target.classList.contains('calc-button')) return;
+    
+    const display = document.querySelector('.calc-display');
+    const value = e.target.textContent;
+    
+    if (value === '=') {
+        try {
+            display.textContent = eval(display.textContent);
+        } catch {
+            display.textContent = 'Error';
+        }
+    } else {
+        if (display.textContent === '0') {
+            display.textContent = value;
+        } else {
+            display.textContent += value;
+        }
+    }
+}
+
+// Add event listener to calculator
+document.querySelector('.calc-buttons').addEventListener('click', handleCalculatorClick);
+
+function navigateToBrowserUrl(url) {
+    const frame = document.getElementById('browser-frame');
+    const urlBar = document.getElementById('url-bar');
+    
+    // Clean up URL
+    if (!url.startsWith('http') && !url.startsWith('about:')) {
+        if (url.includes('.')) {
+            url = 'https://' + url;
+        } else {
+            // Use Google search for non-URL text
+            url = `https://www.google.com/search?q=${encodeURIComponent(url)}`;
+        }
+    }
+
+    try {
+        // Update URL bar
+        urlBar.value = url;
+
+        // Set iframe src with appropriate sandbox attributes
+        frame.src = url;
+        frame.removeAttribute('sandbox');
+        frame.setAttribute('sandbox', 'allow-scripts allow-popups allow-forms allow-same-origin');
+        
+        // Add custom header to prevent X-Frame-Options issues
+        frame.addEventListener('load', function() {
+            try {
+                frame.contentWindow.postMessage('hello', '*');
+            } catch (e) {
+                console.log('Cross-origin communication blocked');
+            }
+        });
+
+        // Store in browser history
+        if (!urlBar.dataset.history) {
+            urlBar.dataset.history = JSON.stringify([url]);
+            urlBar.dataset.historyIndex = '0';
+        } else {
+            const history = JSON.parse(urlBar.dataset.history);
+            const currentIndex = parseInt(urlBar.dataset.historyIndex);
+            history.splice(currentIndex + 1);
+            history.push(url);
+            urlBar.dataset.history = JSON.stringify(history);
+            urlBar.dataset.historyIndex = (history.length - 1).toString();
+        }
+    } catch (error) {
+        console.error('Navigation error:', error);
+        frame.src = 'about:blank';
+        urlBar.value = 'Error loading page';
+    }
+}
+
+function browserBack() {
+    const frame = document.getElementById('browser-frame');
+    const urlBar = document.getElementById('url-bar');
+    if (urlBar.dataset.history) {
+        const history = JSON.parse(urlBar.dataset.history);
+        const currentIndex = parseInt(urlBar.dataset.historyIndex) || 0;
+        if (currentIndex > 0) {
+            const previousUrl = history[currentIndex - 1];
+            navigateToBrowserUrl(previousUrl);
+            urlBar.dataset.historyIndex = currentIndex - 1;
+        }
+    }
+}
+
+function browserForward() {
+    const frame = document.getElementById('browser-frame');
+    const urlBar = document.getElementById('url-bar');
+    if (urlBar.dataset.history) {
+        const history = JSON.parse(urlBar.dataset.history);
+        const currentIndex = parseInt(urlBar.dataset.historyIndex) || 0;
+        if (currentIndex < history.length - 1) {
+            const nextUrl = history[currentIndex + 1];
+            navigateToBrowserUrl(nextUrl);
+            urlBar.dataset.historyIndex = currentIndex + 1;
+        }
+    }
+}
+
+function browserRefresh() {
+    const frame = document.getElementById('browser-frame');
+    const urlBar = document.getElementById('url-bar');
+    if (urlBar.value) {
+        navigateToBrowserUrl(urlBar.value);
+    }
+}
+
+function handleUrlInput(e) {
+    if (e.key === 'Enter') {
+        const input = e.target;
+        navigateToBrowserUrl(input.value);
+    }
+}
+
+function initBrowser() {
+    const frame = document.getElementById('browser-frame');
+    const urlBar = document.getElementById('url-bar');
+    
+    // Set sandbox attributes
+    frame.removeAttribute('sandbox');
+    frame.setAttribute('sandbox', 'allow-scripts allow-popups allow-forms allow-same-origin');
+    
+    // Navigate to Google
+    navigateToBrowserUrl('https://www.google.com');
+}
+
+// Make sure to initialize the browser when the page loads
+document.addEventListener('DOMContentLoaded', initBrowser);
+
+// New function to toggle fullscreen
+function toggleFullscreen() {
+    const terminalWindow = document.getElementById('terminal-window');
+    if (!terminalWindow) return;
+    
+    if (!document.fullscreenElement) {
+        // Enter fullscreen
+        if (terminalWindow.requestFullscreen) {
+            terminalWindow.requestFullscreen();
+        } else if (terminalWindow.webkitRequestFullscreen) {
+            terminalWindow.webkitRequestFullscreen();
+        } else if (terminalWindow.msRequestFullscreen) {
+            terminalWindow.msRequestFullscreen();
+        }
+    } else {
+        // Exit fullscreen
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
+    
+    // Toggle maximized class for proper styling
+    terminalWindow.classList.toggle('maximized');
+}
+
+// New function to close terminal
+function closeTerminal() {
+    toggleWindow('terminal-window');
+}
+
+// Replace initiateShutdown with initiateReboot
+function initiateReboot() {
+    const shutdownScreen = document.querySelector('.shutdown-screen');
+    const endTerminal = document.querySelector('.end-terminal');
+    
+    // Show shutdown screen
+    shutdownScreen.style.display = 'flex';
+    
+    // After 3 seconds, switch to end terminal
+    setTimeout(() => {
+        shutdownScreen.style.display = 'none';
+        endTerminal.style.display = 'flex';
+        
+        // Type out reboot message
+        const typewriter = endTerminal.querySelector('.typewriter');
+        const text = 'Rebooting system...\nPlease stand by...\nDone!\n';
+        let i = 0;
+        
+        function typeWriter() {
+            if (i < text.length) {
+                typewriter.textContent += text.charAt(i);
+                i++;
+                setTimeout(typeWriter, 50);
+            } else {
+                // After typing is done, fade out and reload
+                setTimeout(() => {
+                    endTerminal.classList.add('fade-out');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                }, 1000);
+            }
+        }
+        
+        typeWriter();
+    }, 3000);
+}
+</script>
+<!-- Add this to your HTML body section -->
+<div id="notepad-window" class="window">
+    <div class="window-header">
+        <div class="window-title">Notepad++</div>
+        <div class="window-controls">
+            <div class="window-button window-minimize" onclick="minimizeWindow('notepad-window')"></div>
+            <div class="window-button window-maximize" onclick="maximizeWindow('notepad-window')"></div>
+            <div class="window-button window-close" onclick="toggleWindow('notepad-window')"></div>
+        </div>
+    </div>
+    <div class="window-content notepad-content">
+        <textarea class="notepad-textarea theme-ubuntu"></textarea>
+    </div>
+</div>
+</body>
+</html>
